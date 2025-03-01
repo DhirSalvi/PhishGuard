@@ -1,0 +1,148 @@
+/* Global Dark Mode */
+body {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Background Image with Blur Effect */
+.page-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.3); /* Semi-transparent overlay */
+    color: white;
+}
+
+/* Pseudo-Element for Blurred Background */
+.page-container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../assets/background_image3.png') no-repeat center center fixed;
+    background-size: cover;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1.5rem;
+    font-size: 1.875rem;
+    font-weight: bold;
+}
+
+/* Auth Section (Top-Right Corner) */
+.auth-section {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border: 2px solid white;
+    text-align: center;
+    width: 250px;
+}
+
+/* Auth Section Title & Description */
+.auth-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-section p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-btn {
+    padding: 12px 24px;
+    font-size: 1.125rem;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid white;
+    width: 100%;
+}
+
+/* Primary Button */
+.auth-btn.primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.auth-btn.primary:hover {
+    background-color: #2563eb;
+}
+
+/* Secondary Button */
+.auth-btn.secondary {
+    background-color: transparent;
+    color: #3b82f6;
+    border: 2px solid #3b82f6;
+}
+
+.auth-btn.secondary:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 5rem;
+    padding: 0 1.5rem;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+}
+
+.hero-description {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    color: #cbd5e0;
+}
+
+/* Features Section */
+.features {
+    margin-top: 5rem;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .features {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.feature-card {
+    padding: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
