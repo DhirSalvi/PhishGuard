@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
@@ -5,6 +6,7 @@ import pandas as pd
 import os
 import tldextract
 import re
+from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -36,6 +38,15 @@ spam_model = joblib.load(spam_model_path)  # Flask-based spam classifier
 
 # FastAPI app (FIX: Changed from `fastapi_app` to `app`)
 app = FastAPI(title="Phishing Detection API", version="1.0")
+
+# Add CORS middleware to FastAPI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for now (can be restricted later)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Flask app for compatibility
 flask_app = Flask(__name__)
@@ -141,8 +152,6 @@ def predict_spam():
     result = "Phishing" if prediction == 1 else "Legitimate"
 
     return jsonify({"prediction": result})
-
-
 
 # Root endpoint
 @app.get("/")
