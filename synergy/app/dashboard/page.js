@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Activity, ShieldAlert, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -7,18 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
-import Sidebar from "../../components/ui/Sidebar";
+import Sidebar from "../../components/ui/sidebar";
 
 const data = {
   health: "poor",
   actions: [
-    { name: "Files", value: 5, color: "#4ade80" },
-    { name: "Credentials", value: 25, color: "#fb923c" },
-    { name: "Traffic", value: 15, color: "#60a5fa" },
-    { name: "Network", value: 10, color: "#a78bfa" },
-    { name: "Phishing", value: 8, color: "#f87171" },
-    { name: "VirusTotal", value: 6, color: "#fbbf24" },
-    { name: "Ransomware", value: 30, color: "#ef4444" },
+    { name: "SMS", value: 25, color: "#4ade80" },
+    { name: "Email", value: 5, color: "#fb923c" },
+    { name: "URL's", value: 10, color: "#60a5fa" },
   ],
   totalActions: [
     { name: "High", value: 20, color: "#dc2626" },
@@ -87,7 +83,39 @@ export default function Dashboard() {
     healthStatus = "Concerning";
     healthColor = "text-orange-500";
   }
-  
+
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/check_messages");
+        if (!response.ok) {
+          throw new Error("Failed to fetch messages.");
+        }
+        const data = await response.json();
+        setMessages(data.messages);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+  const spamCount = messages.filter((msg) => msg.is_phishing).length;
+  const safeCount = messages.length - spamCount;
+  const messageData = [
+    { name: "Spam", value: spamCount, color: "#FF0000" },
+    { name: "Safe", value: safeCount, color: "#39FF14" },
+  ];
+
+  const spamPercentage = (spamCount / messages.length) * 100;
+
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
       <Sidebar />
@@ -103,7 +131,7 @@ export default function Dashboard() {
             </Badge>
           </div>
         </div>
-      
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="bg-gray-800 border-gray-700 overflow-hidden">
             <CardHeader className="pb-2">
@@ -134,8 +162,8 @@ export default function Dashboard() {
 
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white">Actions Breakdown</CardTitle>
-              <CardDescription>Security actions by category</CardDescription>
+              <CardTitle className="text-white">Attacks Breakdown</CardTitle>
+              <CardDescription>Phishing attacks by category</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={200}>
@@ -153,39 +181,44 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
+
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white">Total Actions</CardTitle>
-              <CardDescription>Actions by priority level</CardDescription>
+              <CardTitle className="text-white">Message Analysis</CardTitle>
+              <CardDescription>Spam vs Safe Messages</CardDescription>
             </CardHeader>
             <CardContent>
+              {loading && <p>Loading messages...</p>}
+              {error && <p className="text-red-500">{error}</p>}
+
               <div className="flex justify-between items-center h-48">
                 <ResponsiveContainer width="60%" height="100%">
                   <PieChart>
                     <Pie 
-                      data={data.totalActions} 
+                      data={messageData} 
                       cx="50%" 
                       cy="50%" 
-                      innerRadius={40}
+                      innerRadius={40} 
                       outerRadius={70} 
                       dataKey="value"
                       paddingAngle={2}
                     >
-                      {data.totalActions.map((entry, index) => (
+                      {messageData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="w-1/3">
-                  {data.totalActions.map((entry, index) => (
+                  {messageData.map((entry, index) => (
                     <div key={index} className="flex items-center mb-2">
                       <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
                       <div className="text-sm text-white">{entry.name}: {entry.value}</div>
                     </div>
                   ))}
-                  <div className="mt-2 text-sm text-white">Total: {totalActionsSum}</div>
+                  <div className="mt-2 text-sm text-white">Total: {messages.length}</div>
+                  <div className="mt-2 text-sm text-white">Spam Percentage: {spamPercentage.toFixed(2)}%</div>
                 </div>
               </div>
             </CardContent>
@@ -195,8 +228,8 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white">Dark Web Traffic</CardTitle>
-              <CardDescription>Incoming and outgoing connections</CardDescription>
+              <CardTitle className="text-white">Email Phishing</CardTitle>
+              <CardDescription>Safe vs Phishing Emails</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={200}>
@@ -205,8 +238,8 @@ export default function Dashboard() {
                   <YAxis tick={{ fill: "white" }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ color: "white" }} />
-                  <Bar name="Incoming" dataKey="incoming" fill="#60a5fa" />
-                  <Bar name="Outgoing" dataKey="outgoing" fill="#f43f5e" />
+                  <Bar name="Safe" dataKey="incoming" fill="#60a5fa" />
+                  <Bar name="Attacks" dataKey="outgoing" fill="#f43f5e" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -215,24 +248,24 @@ export default function Dashboard() {
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader className="pb-2">
               <CardTitle className="text-white">Scan Controls</CardTitle>
-              <CardDescription>Run security scans for your company</CardDescription>
+              <CardDescription>Detect whether phishing attack is taking place or not</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4">
                 <Button className="w-full bg-orange-500 hover:bg-orange-600 transition-colors">
-                  <Activity className="mr-2 h-4 w-4" /> Start Company Discovery
+                  <Activity className="mr-2 h-4 w-4" /> Start SMS Detection
                 </Button>
                 <Button className="w-full bg-red-600 hover:bg-red-700 transition-colors">
-                  <ShieldAlert className="mr-2 h-4 w-4" /> Start Company Threat Scan
+                  <ShieldAlert className="mr-2 h-4 w-4" /> Start URL Detection
                 </Button>
                 <Button variant="outline" className="w-full border-gray-600 hover:bg-gray-700 transition-colors">
-                  <BookOpen className="mr-2 h-4 w-4" /> View Previous Reports
+                  <BookOpen className="mr-2 h-4 w-4" /> Start Email Detection
                 </Button>
               </div>
               <div className="text-sm text-gray-400 pt-2 border-t border-gray-700">
-                * Discovery scans assess your company's digital footprint
+                * Discovery scans assess the amount of phishing attacks a day
                 <br />
-                * Threat scans identify potential vulnerabilities
+                * Threat scans identify potential phishing attacks
               </div>
             </CardContent>
           </Card>

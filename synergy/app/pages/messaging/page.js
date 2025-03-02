@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Layout from "../../../components/ui/Layout";
 
-export default function Detection() {
+export default function Messaging() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ export default function Detection() {
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold">Detection</h1>
+      <h1 className="text-2xl font-bold">Messaging</h1>
       <p>Detect whether a message, email, or URL is spam.</p>
 
       {loading && <p>Loading messages...</p>}
