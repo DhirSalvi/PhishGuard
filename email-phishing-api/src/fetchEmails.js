@@ -1,6 +1,9 @@
+module.exports = fetchEmails;
 const fs = require("fs");
 const path = require("path");
 const { google } = require("googleapis");
+const axios = require("axios");
+const whois = require("whois-json");
 
 // Load credentials
 const TOKEN_PATH = path.join(__dirname, "token.json");
@@ -25,7 +28,59 @@ function extractUrls(text) {
     return text.match(urlRegex) || [];
 }
 
-// Fetch emails from Gmail
+// Function to check URL against a phishing database (Google Safe Browsing API or PhishTank)
+async function checkPhishingUrl(url) {
+    try {
+        const response = await axios.get(`https://www.virustotal.com/vtapi/v2/url/report`, {
+            params: {
+                apikey: "9e1a033dd9d19fe654cb151999094c32c599dfce6ab974a98265789158489c59",
+                resource: url,
+            },
+        });
+
+        if (response.data.positives > 0) {
+            return true; // URL is flagged as phishing
+        }
+    } catch (error) {
+        console.error(`Error checking URL: ${url}`, error);
+    }
+    return false; // URL is not flagged
+}
+
+// Function to check domain reputation using WHOIS lookup
+async function checkDomainReputation(url) {
+    try {
+        const domain = new URL(url).hostname;
+        const whoisData = await whois(domain);
+
+        if (whoisData.creationDate) {
+            const domainAge = (new Date() - new Date(whoisData.creationDate)) / (1000 * 60 * 60 * 24); // Age in days
+            if (domainAge < 90) {
+                return "Newly registered domain (potentially suspicious)";
+            }
+        }
+    } catch (error) {
+        console.error("Error checking domain reputation:", error);
+    }
+    return "Domain reputation is unknown";
+}
+
+// Function to analyze email for phishing patterns
+function detectPhishingPatterns(text) {
+    const phishingKeywords = [
+        "verify your account",
+        "urgent action required",
+        "password expired",
+        "click here to reset",
+        "suspicious activity detected",
+        "update your payment information",
+    ];
+
+    const lowerText = text.toLowerCase();
+    return phishingKeywords.some(keyword => lowerText.includes(keyword));
+}
+
+// Fetch emails from Gmail and analyze for phishing
 async function fetchEmails() {
     try {
         const auth = await authorize();
@@ -67,8 +122,32 @@ async function fetchEmails() {
 
             // Extract URLs from the email body
             const urls = extractUrls(emailBody);
+            const phishingUrls = [];
 
-            emailData.push({ from, subject, snippet, urls });
+            // Check each URL for phishing
+            for (const url of urls) {
+                const isPhishing = await checkPhishingUrl(url);
+                if (isPhishing) phishingUrls.push(url);
+            }
+
+            // Check domain reputation
+            const domainReputation = await Promise.all(urls.map(checkDomainReputation));
+
+            // Detect phishing patterns in the email content
+            const phishingPatternDetected = detectPhishingPatterns(emailBody);
+
+            // Mark email as suspicious if any phishing signs are detected
+            const isPhishingEmail = phishingPatternDetected || phishingUrls.length > 0;
+
+            emailData.push({ 
+                from, 
+                subject, 
+                snippet, 
+                urls, 
+                phishingUrls, 
+                domainReputation, 
+                isPhishingEmail 
+            });
         }
 
         return emailData;
@@ -79,3 +158,4 @@ async function fetchEmails() {
 }
 
 module.exports = fetchEmails;
+
