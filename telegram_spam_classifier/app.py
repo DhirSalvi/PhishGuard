@@ -18,7 +18,7 @@ def predict():
         return jsonify({"error": "No input provided"}), 400
 
     # Transform input if needed (e.g., vectorize for NLP models)
-    input_data = vectorizer.transform([data]) if "vectorizer" in globals() else np.array([data])
+    input_data = vectorizer.transform([data]) if "vectorizer" in globals() else np.array([data]) # type: ignore
 
     prediction = model.predict(input_data)[0]
     result = "Phishing" if prediction == 1 else "Legitimate"
