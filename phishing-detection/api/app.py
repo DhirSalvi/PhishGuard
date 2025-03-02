@@ -123,7 +123,7 @@ async def predict_email(request: EmailRequest):
 
     return {"email": email_text[:50] + ('...' if len(email_text) > 50 else ''), "prediction": prediction_label}
 
-@flask_app.route("/predict", methods=["POST"])
+@flask_app.route("/predict/text", methods=["POST"])
 def predict_spam():
     """
     Predict if an email is spam or not using Flask (Frontend Compatible).

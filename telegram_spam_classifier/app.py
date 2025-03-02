@@ -10,7 +10,7 @@ CORS(app)  # Enable CORS for frontend communication
 model = joblib.load("spam_classifier.pkl")  # Update with your model filename
 #vectorizer = joblib.load("vectorizer.pkl")  # If using text vectorization
 
-@app.route("/predict", methods=["POST"])
+@app.route("/telegram", methods=["POST"])
 def predict():
     data = request.json.get("text")  # Get text input from JSON request
 
