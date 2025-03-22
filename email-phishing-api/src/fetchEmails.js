@@ -33,7 +33,7 @@ async function checkPhishingUrl(url) {
     try {
         const response = await axios.get(`https://www.virustotal.com/vtapi/v2/url/report`, {
             params: {
-                apikey: "9e1a033dd9d19fe654cb151999094c32c599dfce6ab974a98265789158489c59",
+                apikey: "1234",
                 resource: url,
             },
         });

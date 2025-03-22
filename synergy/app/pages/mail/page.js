@@ -1,7 +1,7 @@
 "use client"; // Ensure this is a client component
 
 import { useState, useEffect } from "react";
-import Layout from "../../../components/ui/Layout";
+import Layout from "../../../components/ui/layout";
 
 // Function to fetch phishing emails from the backend API
 const fetchPhishingEmails = async () => {

@@ -18,12 +18,12 @@ except Exception as e:
     print(f"Error loading model: {e}")
 
 # Telegram API credentials
-API_ID = 21434478
-API_HASH = "b98eb6065609c23fc1e7a88427f5e693"
-CHANNEL_ID = 2316273702  # Ensure it's negative for supergroups/channels
+API_ID = 1234
+API_HASH = "hash"
+CHANNEL_ID = 1234  # Ensure it's negative for supergroups/channels
 
 # VirusTotal API Key
-VIRUSTOTAL_API_KEY = "eb43169cd25590190195a00ad3c12f9d718892da9c792511bcfb4326cbd0a4e8"
+VIRUSTOTAL_API_KEY = "1234"
 
 # Function to preprocess the message
 def preprocess_message(text):

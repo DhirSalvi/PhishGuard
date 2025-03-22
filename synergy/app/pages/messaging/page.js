@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import Layout from "../../../components/ui/Layout";
+import Layout from "../../../components/ui/layout";
 
 export default function Messaging() {
   const [messages, setMessages] = useState([]);

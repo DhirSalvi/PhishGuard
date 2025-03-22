@@ -1,7 +1,7 @@
 "use client"; // Ensure this is a client component
 
 import { useState } from "react";
-import Layout from "../../../components/ui/Layout";
+import Layout from "../../../components/ui/layout";
 
 export default function Detection() {
   const [inputText, setInputText] = useState("");
@@ -20,10 +20,10 @@ export default function Detection() {
       endpoint = "http://127.0.0.1:5001/predict/text";
       data = { text: inputText };
     } else if (type === "url") {
-      endpoint = "http://127.0.0.1:8000/predict/url/";
+      endpoint = "http://127.0.0.1:5005/predict/url/";
       data = { url: inputUrl };
     } else if (type === "email") {
-      endpoint = "http://127.0.0.1:8000/predict/email";
+      endpoint = "http://127.0.0.1:5005/predict/email";
       data = { email_text: inputEmail };
     }
 

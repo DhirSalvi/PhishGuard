@@ -55,24 +55,24 @@ export default function Dashboard() {
     const highPriorityWeight = 0.6;
     const mediumPriorityWeight = 0.3;
     const lowPriorityWeight = 0.1;
-    
+
     const highRatio = data.totalActions[0].value / totalActionsSum;
     const mediumRatio = data.totalActions[1].value / totalActionsSum;
     const lowRatio = data.totalActions[2].value / totalActionsSum;
-    
+
     const healthScore = 100 - (
-      (highRatio * highPriorityWeight * 100) + 
-      (mediumRatio * mediumPriorityWeight * 100) + 
+      (highRatio * highPriorityWeight * 100) +
+      (mediumRatio * mediumPriorityWeight * 100) +
       (lowRatio * lowPriorityWeight * 100)
     );
-    
+
     return Math.max(0, Math.min(100, Math.round(healthScore)));
   };
 
   const healthScore = calculateHealthScore();
   let healthStatus = "Poor";
   let healthColor = "text-red-500";
-  
+
   if (healthScore > 75) {
     healthStatus = "Good";
     healthColor = "text-green-500";
@@ -141,10 +141,10 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-4">
                 <div className={`text-2xl font-bold ${healthColor}`}>{healthStatus.toUpperCase()}</div>
-                <Progress value={healthScore} className="h-2 bg-gray-700" 
-                  indicatorclassname={healthScore > 75 ? "bg-green-500" : 
-                  healthScore > 50 ? "bg-yellow-500" : 
-                  healthScore > 25 ? "bg-orange-500" : "bg-red-500"} 
+                <Progress value={healthScore} className="h-2 bg-gray-700"
+                  indicatorclassname={healthScore > 75 ? "bg-green-500" :
+                    healthScore > 50 ? "bg-yellow-500" :
+                      healthScore > 25 ? "bg-orange-500" : "bg-red-500"}
                 />
                 <div className="flex justify-between text-sm text-white">
                   <span>0</span>
@@ -152,8 +152,8 @@ export default function Dashboard() {
                   <span>100</span>
                 </div>
                 <p className="text-sm text-gray-400">
-                  {healthScore < 50 ? 
-                    "Improve outstanding actions to enhance your company health." : 
+                  {healthScore < 50 ?
+                    "Improve outstanding actions to enhance your company health." :
                     "Your company health is on the right track. Keep monitoring for new threats."}
                 </p>
               </div>
@@ -194,12 +194,12 @@ export default function Dashboard() {
               <div className="flex justify-between items-center h-48">
                 <ResponsiveContainer width="60%" height="100%">
                   <PieChart>
-                    <Pie 
-                      data={messageData} 
-                      cx="50%" 
-                      cy="50%" 
-                      innerRadius={40} 
-                      outerRadius={70} 
+                    <Pie
+                      data={messageData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={70}
                       dataKey="value"
                       paddingAngle={2}
                     >
@@ -252,16 +252,29 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4">
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 transition-colors">
+                <Button
+                  className="w-full bg-orange-500 hover:bg-orange-600 transition-colors"
+                  onClick={() => window.location.href = '/pages/detection'}
+                >
                   <Activity className="mr-2 h-4 w-4" /> Start SMS Detection
                 </Button>
-                <Button className="w-full bg-red-600 hover:bg-red-700 transition-colors">
+
+                <Button
+                  className="w-full bg-red-600 hover:bg-red-700 transition-colors"
+                  onClick={() => window.location.href = '/pages/detection'}
+                >
                   <ShieldAlert className="mr-2 h-4 w-4" /> Start URL Detection
                 </Button>
-                <Button variant="outline" className="w-full border-gray-600 hover:bg-gray-700 transition-colors">
+
+                <Button
+                  variant="outline"
+                  className="w-full border-gray-600 hover:bg-gray-700 transition-colors"
+                  onClick={() => window.location.href = '/pages/detection'}
+                >
                   <BookOpen className="mr-2 h-4 w-4" /> Start Email Detection
                 </Button>
               </div>
+
               <div className="text-sm text-gray-400 pt-2 border-t border-gray-700">
                 * Discovery scans assess the amount of phishing attacks a day
                 <br />
